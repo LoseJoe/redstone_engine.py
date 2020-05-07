@@ -46,13 +46,14 @@ class Block(pygame.sprite.Sprite):
 
         self.parentx = 0
         self.parenty = 0
+        self.already_updated = False
 
         if(self.id == 69):
             self.can_be_powered = True
             self.signal_strength = 15
         else:
             self.can_be_powered = False
-            self.signal_strength = 10
+            self.signal_strength = 15
 
         self.powered_state = False
 
@@ -76,8 +77,12 @@ class Block(pygame.sprite.Sprite):
     def change_can_be_powered(self):
         self.can_be_powered = not self.can_be_powered
 
-    def update_powered_state(self):
+    def change_updated(self):
+        self.already_updated = False
 
+    def update_powered_state(self):
+        if(self.already_updated): return
+        self.already_updated = True
         for block in renderedblocks:
             myx = self.x / size
             myy = self.y / size
@@ -274,12 +279,16 @@ while running:
     for block in renderedblocks:
         block.draw(screen)
 
+        block.change_updated()
+
         if(block.isSelected(Mouse_x, Mouse_y)):
             if "e" in down:
+                block.update_blocks()
                 time.sleep(0.2)
                 if (block.id == 69):
                     print("Updating State On Lever")
                     block.update_powered_state()
+
 
             if(pygame.mouse.get_pressed()[0]):
                 block.changeID(holdingid)
