@@ -86,6 +86,7 @@ class Block(pygame.sprite.Sprite):
         for block in renderedblocks:
             myx = self.x / size
             myy = self.y / size
+
             if (block.x / size == myx - 1 and block.y / size == myy):
                 if(block.id == 69 or block.id == 331 or block.id == 332):
                     self.parentx = block.x / size
@@ -116,8 +117,10 @@ class Block(pygame.sprite.Sprite):
         if(self.parentx == 0): return
         if(self.parenty == 0): return
 
+        self.signal_strength = (self.parent.signal_strength or 0) - 1
+
+
         if(self.id == 2):
-            print("updating block state")
             self.powered_state = not self.powered_state
             self.update_blocks()
             return
@@ -128,7 +131,6 @@ class Block(pygame.sprite.Sprite):
             return
 
         if(self.id == 76):
-            print("Updating torch")
             self.powered_state = False
             self.id = 75
             self.image = blockimg[self.id]
@@ -136,7 +138,6 @@ class Block(pygame.sprite.Sprite):
             return
 
         if (self.id == 75):
-            print("Updating torch")
             self.powered_state = True
             self.id = 76
             self.image = blockimg[self.id]
@@ -144,9 +145,7 @@ class Block(pygame.sprite.Sprite):
             return
 
         if(self.id == 331):
-            print("updating redstone on")
             self.powered_state = True
-            self.signal_strength = self.parent.signal_strength - 1
             if(self.signal_strength < 0): return
             print(self.signal_strength)
             self.id = 332
@@ -155,9 +154,7 @@ class Block(pygame.sprite.Sprite):
             return
 
         if(self.id == 332):
-            print("updating redstone off")
             self.powered_state = False
-            self.signal_strength = self.parent.signal_strength - 1
             if (self.signal_strength < 0): return
             self.id = 331
             self.image = blockimg[self.id]
@@ -170,15 +167,19 @@ class Block(pygame.sprite.Sprite):
             myy = self.y / size
             if (block.x / size == myx - 1 and block.y / size == myy):
                 if (self.parentx == block.x / size and self.parenty == block.y / size): return
+                print("I am at (" + str(myx) + "," + str(myy) + ") and updating block to the left at (x-1, y)")
                 block.update_powered_state()
             if (block.x / size == myx + 1 and block.y / size == myy):
                 if (self.parentx == block.x / size and self.parenty == block.y / size): return
+                print("I am at (" + str(myx) + "," + str(myy) + ") and updating block to the right at (x+1, y)")
                 block.update_powered_state()
             if (block.x / size == myx and block.y / size == myy - 1):
                 if (self.parentx == block.x / size and self.parenty == block.y / size): return
+                print("I am at (" + str(myx) + "," + str(myy) + ") and updating block to the bottom at (x, y-1)")
                 block.update_powered_state()
             if (block.x / size == myx and block.y / size == myy + 1):
                 if (self.parentx == block.x / size and self.parenty == block.y / size): return
+                print("I am at (" + str(myx) + "," + str(myy) + ") and updating block to the top at (x, y+1)")
                 block.update_powered_state()
         return
 
